@@ -1,6 +1,6 @@
 //! The different kind of elements supported in Torch.
 
-use half::f16;
+use half;
 
 /// The different kind of elements that a Tensor can hold.
 #[allow(clippy::upper_case_acronyms)]
@@ -47,7 +47,7 @@ impl Kind {
         }
     }
 
-    pub(super) fn of_c_int(v: libc::c_int) -> Result<Kind, crate::TchError> {
+    pub(super) fn from_c_int(v: libc::c_int) -> Result<Kind, crate::TchError> {
         match v {
             0 => Ok(Kind::Uint8),
             1 => Ok(Kind::Int8),
@@ -133,9 +133,14 @@ unsafe impl Element for i64 {
     const ZERO: Self = 0;
 }
 
-unsafe impl Element for f16 {
+unsafe impl Element for half::f16 {
     const KIND: Kind = Kind::Half;
     const ZERO: Self = half::f16::ZERO;
+}
+
+unsafe impl Element for half::bf16 {
+    const KIND: Kind = Kind::Half;
+    const ZERO: Self = half::bf16::ZERO;
 }
 
 unsafe impl Element for f32 {
